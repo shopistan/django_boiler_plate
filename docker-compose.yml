@@ -1,0 +1,72 @@
+version: "2"
+services:
+  database:
+    image: postgres
+    hostname: postgres
+    container_name: pg-container
+    ports:
+      - "8090:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRESQL_USERNAME: postgres
+      POSTGRES_PASSWORD: ""
+      POSTGRES_HOST_AUTH_METHOD: "trust"
+    networks:
+      django_boiler:
+        ipv4_address: 10.5.0.2
+  pgadmin:
+    image: dpage/pgadmin4:4.13
+    volumes:
+      - pga4volume:/var/lib/pgadmin
+    links:
+      - database
+    depends_on:
+      - database
+    ports:
+      - "5555:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: pgadmin4@pgadmin.org
+      PGADMIN_DEFAULT_PASSWORD: admin
+    restart: unless-stopped
+    networks:
+      django_boiler:
+        ipv4_address: 10.5.0.3
+  backend:
+    container_name: backend
+    build:
+      context: .
+    environment:
+      - DB_NAME=test
+      - DB_USER=postgres
+      - DB_ADDRESS=10.5.0.2
+      - DB_PORT=5432
+      - HOST=localhost:3000
+    command: [
+        "bash",
+        "-c",
+        "export ENV_Setting=${ENV} && yes | python manage.py makemigrations --merge
+        && yes | python manage.py makemigrations && yes | python manage.py migrate && python manage.py runserver 0.0.0.0:8000",
+      ]
+    volumes:
+      - .:/code
+    links:
+      - database
+    ports:
+      - "8000:8000"
+    depends_on:
+      - database
+    networks:
+      django_boiler:
+        ipv4_address: 10.5.0.4
+
+volumes:
+  pgdata: {}
+  pga4volume: {}
+networks:
+  django_boiler:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.5.0.0/24
+          gateway: 10.5.0.1
