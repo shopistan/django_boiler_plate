@@ -13,20 +13,12 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-HOST = os.environ.get('HOST')
-ADMIN_URL = "http://"+HOST+"/"
-
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': DB_NAME,
-        'USER': DB_USER,
-        'HOST': DB_ADDRESS,
-        'PORT': DB_PORT,
-        'CONN_MAX_AGE': None
-
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }

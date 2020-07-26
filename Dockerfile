@@ -1,4 +1,5 @@
-FROM python:3.7.4
+ARG CODE_VERSION=3.7.4
+FROM python:${CODE_VERSION}
 
 # Set environment variables
 ENV PYTHONUNBUFFERED 1
