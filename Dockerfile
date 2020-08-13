@@ -3,6 +3,9 @@ FROM python:${CODE_VERSION}
 
 # Set environment variables
 ENV PYTHONUNBUFFERED 1
+# setting default value for build_env
+ARG build_env=local 
+ENV ENV_Setting=$build_env
 
 COPY requirements.txt /
 
